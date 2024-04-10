@@ -1,4 +1,4 @@
-# Repositório do projeto Car Shop
+# Repositório do projeto Car Shop 🚗
 
 ## Módulo: BACK-END
 
