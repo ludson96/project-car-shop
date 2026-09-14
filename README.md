@@ -1,211 +1,141 @@
-# Repositório do projeto Car Shop 🚗
+# Car Shop API 🚗
 
-## Módulo: BACK-END
+[![Node.js](https://img.shields.io/badge/Node.js-v20-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-v4.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Express](https://img.shields.io/badge/Express-4.x-black?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-6.0-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Redis](https://img.shields.io/badge/Redis-Cache-DC382D?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Vitest](https://img.shields.io/badge/Vitest-Tests-FCC72B?style=for-the-badge&logo=vitest&logoColor=black)](https://vitest.dev/)
+[![Swagger](https://img.shields.io/badge/Swagger-OpenAPI_3.0-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](http://localhost:3001/docs)
 
- Repositório possuí projeto desenvolvido no período que estive na **Trybe**, abordando os conceitos de **API Rest** com CRUD completo em **TypeScript**, com utilização da ODM **Mongoose**, além de construir o projeto de acordo com o paradigma de orientação a objetos (**POO**) e **SOLID**. **Docker** para rodar o node e mongodb. Utilizando a arquitetura **MSC**. </br>
-Para testar a abordagem foram usados testes via **Mocha**, **Chai**, **Sinon**, com abordagem variando entre **TDD** e **BDD**;
+API RESTful completa e escalável desenvolvida em **TypeScript** e **Node.js** para gerenciamento de concessionária de veículos, inventário e vendas. 
 
-## Informações de aprendizados
-
-- Este é um projeto desenvolvido para me ajudar a aprender `TypeScript`, `MongoDB` e `Mongoose`;
-- Segundo projeto usando `MongoDB`;
-- Primeiro projeto usando `Mongoose`;
-- Utilizei o Cliente Rest `Thunder Client`, como extensão, para visualizar o retorno do meu acesso.
-
-## Linguagem usadas
-
-[![NodeJS][NodeJS-logo]][NodeJS-url]
-[![Docker][Docker-logo]][Docker-url]
-[![ESLint][ESLint-logo]][ESLint-url]
-[![TypeScript][TypeScript-logo]][TypeScript-url]
-[![ts-node][ts-node-logo]][ts-node-url]
-[![Express][Express-logo]][Express-url]
-[![Mongo][Mongo-logo]][Mongo-url]
-[![Mongoose][Mongoose-logo]][Mongoose-url]
-[![.ENV][.ENV-logo]][.ENV-url]
-[![Jest][Jest-logo]][Jest-url]
-[![Mocha][Mocha-logo]][Mocha-url]
-[![Chai][Chai-logo]][Chai-url]
-
-## O que foi desenvolvido
-
-Para este projeto, foram aplicados os princípios de Programação Orientada a Objetos (POO) para a construção de uma API com CRUD para gerenciar uma concessionária de veículos. Em TypeScript, utilizando o banco de dados MongoDB através do framework do Mongoose.
-
-## Instruções para instalar e rodar
-
-1. Clone o repo:
-
-    ```bash
-    git clone git@github.com:Ludson96/project-car-shop.git
-    ```
-
-1. Entre na pasta do repositório que você acabou de clonar:
-
-    ```bash
-    cd project-car-shop
-    ```
-
-1. Instale as dependências e inicialize o projeto:
-
-    ```bash
-    npm install
-    ```
-
-1. Rode os serviços `node` e `db` com o comando, através do docker:
-
-    ```bash
-    docker-compose up -d
-    ```
-
-## Endpoints
-
-Abaixo você pode conferir um detalhamento dos endpoints utilizados no projeto. Para realizar as requisições HTTP e consultar o comportamento de cada endpoint, você pode utilizar a extensão [Thunder Client](https://www.thunderclient.com/).
-
-> ℹ️ Para todos os endpoints que exijam o id dos carros e motos, atente-se que o id é um `ObjectId`. Saiba mais sobre ObjectId [aqui](https://www.mongodb.com/docs/manual/reference/bson-types/#objectid).
-
-<details>
-
-  <summary><strong>Cars</strong></summary>
-
-### GET /cars
-
-- Retorna todos os carros registrados no banco de dados.
-- URL: `http://localhost:PORT/cars`
-
-### POST /cars
-
-- Adiciona um novo carro ao banco de dados.
-- URL: `http://localhost:PORT/cars`
-- O corpo da requisição deve seguir o formato abaixo:
-
-```
-{
-  "model": "Marea",
-  "year": 2002,
-  "color": "Black",
-  "status": true, // Não é obrigatório. Se não for inserido, o valor do status será 'false'
-  "buyValue": 15.990,
-  "doorsQty": 4,
-  "seatsQty": 5
-}
-```
-
-### GET /cars/:id
-
-- Retorna o carro cujo id foi passado na URL.
-- Exemplo de URL: `http://localhost:PORT/cars/634852326b35b59438fbea2f`
-
-### PUT /cars/:id
-
-- Atualiza o carro cujo id foi passado na URL.
-- Exemplo de URL: `http://localhost:PORT/cars/634852326b35b59438fbea2f`
-- O corpo da requisição deve seguir o formato abaixo:
-
-```
-{
-  "model": "Marea",
-  "year": 1992,
-  "color": "Red",
-  "status": true, // Não é obrigatório. Se não for inserido, o valor do status será 'false'
-  "buyValue": 12.000,
-  "doorsQty": 2,
-  "seatsQty": 5
-}
-```
-
-### DELETE /cars/:id
-
-- Remove do banco de dados o carro cujo id foi passado na URL.
-- Exemplo de URL: `http://localhost:PORT/cars/634852326b35b59438fbea2f`
+O projeto foi concebido seguindo princípios de **Clean Architecture**, **SOLID**, **Programação Orientada a Objetos (POO)** e padrões de resiliência como **Fail-Fast** e **Cache em Memória**.
 
 ---
 
-</details>
+## 🌟 Funcionalidades e Destaques
 
-<details>
-
-  <summary><strong>Motorcycles</strong></summary>
-
-### GET /motorcycles
-
-- Retorna todas as motos registradas no banco de dados.
-- URL: `http://localhost:PORT/motorcycles`
-
-### POST /motorcycles
-
-- Adiciona uma nova moto ao banco de dados.
-- URL: `http://localhost:PORT/motorcycles`
-- O corpo da requisição deve seguir o formato abaixo:
-
-```
-{
-  "model": "Honda Cb 600f Hornet",
-  "year": 2005,
-  "color": "Yellow",
-  "status": true, // Não é obrigatório. Se não for inserido, o valor do status será 'false'
-  "buyValue": 30.000,
-  "category": "Street", // Valores aceitos: "Street", "Custom" ou "Trail"
-  "engineCapacity": 600
-}
-```
-
-### GET /motorcycles/:id
-
-- Retorna a moto cujo id foi passado na URL.
-- Exemplo de URL: `http://localhost:PORT/motorcycles/634852326b35b59438fbea2f`
-
-### PUT /motorcycles/:id
-
-- Atualiza a moto cujo id foi passado na URL.
-- Exemplo de URL: `http://localhost:PORT/motorcycles/634852326b35b59438fbea2f`
-- O corpo da requisição deve seguir o formato abaixo:
-
-```
-{
-  "model": "Honda Cb 600f Hornet",
-  "year": 2014,
-  "color": "Red",
-  "status": true, // Não é obrigatório. Se não for inserido, o valor do status será 'false'
-  "buyValue": 45.000,
-  "category": "Street", // Valores aceitos: "Street", "Custom" ou "Trail"
-  "engineCapacity": 600
-}
-```
-
-### DELETE /motorcycles/:id
-
-- Remove do banco de dados a moto cujo id foi passado na URL.
-- Exemplo de URL: `http://localhost:PORT/motorcycles/634852326b35b59438fbea2f`
+- **Arquitetura em Camadas (DDD / MSC)**:
+  - Separação clara entre **Domínio** (Entidades ricas `Vehicle`, `Car`, `Motorcycle`), **Services** (Regras de negócio), **Controllers** (Tratamento HTTP) e **Models / ODM** (`AbstractODM` genérico).
+  - Inversão e Injeção de Dependências (DIP) em todas as camadas.
+- **Autenticação & Autorização (RBAC)**:
+  - Registro e login com hash criptográfico seguro (`bcryptjs`).
+  - Proteção de rotas com **JWT (JSON Web Token)** e controle de acesso baseado em papéis (`admin` vs `customer`).
+- **Validação de Schemas com Zod**:
+  - Validação estrita de contratos de entrada no padrão Fail-Fast antes da execução dos controladores.
+- **Filtros e Paginação Avançada**:
+  - Listagem com suporte a busca dinâmica por texto (`model`, `color`), faixa de preço (`minPrice`, `maxPrice`), status e paginação estruturada (`page`, `limit`, `totalPages`).
+- **Módulo de Vendas (Relacionamento NoSQL)**:
+  - Registro atômico de transações de compra/venda, vinculando clientes aos veículos e atualizando automaticamente a disponibilidade no inventário.
+- **Cache de Alta Performance com Redis**:
+  - Cache transparente nas rotas públicas com cabeçalhos `X-Cache: HIT / MISS` e fallback gracioso (resiliência caso o Redis esteja indisponível).
+- **Segurança de Produção**:
+  - Cabeçalhos de proteção com `helmet`, `cors` configurável e limitação de taxa (`express-rate-limit`).
+- **Documentação Interativa Swagger / OpenAPI 3.0**:
+  - Interface visual disponível em `/docs` permitindo testar todos os endpoints diretamente pelo navegador.
+- **Health Check**:
+  - Rota `GET /health` reportando integridade do servidor e estado da conexão com o MongoDB e Redis.
 
 ---
 
-</details>
+## 🚀 Como Executar
 
-<br/>
+### Pré-requisitos
+- [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/) instalados, ou [Node.js 20+](https://nodejs.org/) para execução local.
 
-> `docker-compose.yml` fornecidos pela Trybe.
+### 1. Execução Rápida via Docker Compose (Recomendado)
 
-[Express-logo]: https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB
-[Express-url]: https://expressjs.com
-[NodeJS-logo]: https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white
-[NodeJS-url]: https://nodejs.org/en/
-[Mongo-url]:https://www.mongodb.com/
-[Mongo-logo]: https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white
-[Docker-logo]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
-[Docker-url]: https://www.docker.com
-[ESLint-logo]: https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white
-[ESLint-url]: https://eslint.org/
-[TypeScript-logo]: https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white
-[TypeScript-url]: https://www.typescriptlang.org/
-[ts-node-logo]: https://img.shields.io/badge/ts--node-3178C6?logo=tsnode&logoColor=fff&style=for-the-badge
-[ts-node-url]: https://www.npmjs.com/package/ts-node-dev
-[.ENV-logo]: https://img.shields.io/badge/.ENV-ECD53F?logo=dotenv&logoColor=000&style=for-the-badge
-[.ENV-url]: https://www.npmjs.com/package/dotenv
-[Mongoose-url]: https://mongoosejs.com/
-[Mongoose-logo]: https://img.shields.io/badge/Mongoose-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white
-[Jest-logo]: https://img.shields.io/badge/-jest-%23C21325?style=for-the-badge&logo=jest&logoColor=white
-[Jest-url]: https://jestjs.io
-[Chai-logo]: https://img.shields.io/badge/Chai-A30701?logo=chai&logoColor=fff&style=for-the-badge
-[Chai-url]: https://www.chaijs.com
-[Mocha-logo]: https://img.shields.io/badge/-mocha-%238D6748?style=for-the-badge&logo=mocha&logoColor=white
-[Mocha-url]: https://mochajs.org
+Suba toda a infraestrutura (API Node.js, banco MongoDB e Redis) com um único comando:
+
+```bash
+docker compose up --build -d
+```
+
+- **API**: `http://localhost:3001`
+- **Documentação Swagger**: `http://localhost:3001/docs`
+- **Health Check**: `http://localhost:3001/health`
+
+### 2. Execução Local para Desenvolvimento
+
+1. Instale as dependências:
+   ```bash
+   npm install
+   ```
+
+2. Crie um arquivo `.env` na raiz do projeto (opcional, possui fallbacks padrão):
+   ```env
+   PORT=3001
+   MONGO_URI=mongodb://localhost:27017/CarShop
+   REDIS_HOST=localhost
+   REDIS_PORT=6379
+   JWT_SECRET=sua_chave_secreta_jwt
+   ```
+
+3. Inicie o servidor em modo de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 🧪 Testes Automatizados e Qualidade
+
+O projeto utiliza a suíte de testes moderna **Vitest** (com TypeScript nativo) e **Supertest** para testes de integração ponta a ponta (E2E).
+
+```bash
+# Executar todos os testes
+npm run test
+
+# Executar em modo interativo (Watch Mode)
+npm run test:watch
+
+# Gerar relatório detalhado de cobertura de código
+npm run test:coverage
+
+# Executar linter de código (ESLint)
+npm run lint
+
+# Checagem de tipagem estática (TypeScript)
+npx tsc --noEmit
+```
+
+---
+
+## 📖 Documentação da API
+
+Você pode explorar e testar todas as rotas diretamente pela interface interativa do **Swagger** em:
+👉 **`http://localhost:3001/docs`**
+
+### Principais Rotas
+
+| Método | Endpoint | Descrição | Acesso |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/health` | Status de saúde da aplicação, MongoDB e Redis | Público |
+| `POST` | `/users/register` | Cadastro de novo usuário | Público |
+| `POST` | `/users/login` | Autenticação e obtenção do Bearer JWT | Público |
+| `GET` | `/cars` | Listagem paginada e filtrada de carros | Público |
+| `POST` | `/cars` | Cadastro de novo carro | Requer Admin |
+| `GET` | `/cars/:id` | Detalhes de um carro por ID | Público |
+| `PUT` | `/cars/:id` | Atualização de dados de um carro | Requer Admin |
+| `DELETE`| `/cars/:id` | Remoção de um carro do estoque | Requer Admin |
+| `GET` | `/motorcycles` | Listagem paginada e filtrada de motos | Público |
+| `POST` | `/motorcycles` | Cadastro de nova moto | Requer Admin |
+| `GET` | `/motorcycles/:id`| Detalhes de uma moto por ID | Público |
+| `PUT` | `/motorcycles/:id`| Atualização de dados de uma moto | Requer Admin |
+| `DELETE`| `/motorcycles/:id`| Remoção de uma moto do estoque | Requer Admin |
+| `POST` | `/sales` | Registro de compra/venda de veículo | Usuário Autenticado |
+| `GET` | `/sales/my-sales` | Histórico de compras do usuário logado | Usuário Autenticado |
+| `GET` | `/sales` | Relatório completo de todas as vendas | Requer Admin |
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+- **Core**: Node.js 20 LTS, Express, TypeScript
+- **Database & Cache**: MongoDB, Mongoose ODM, Redis (ioredis)
+- **Validação & Segurança**: Zod, BcryptJS, JSON Web Token (JWT), Helmet, CORS, Express Rate Limit
+- **Testes & CI**: Vitest (v8 coverage), Supertest, GitHub Actions CI
+- **DevOps**: Docker, Docker Compose
+- **Documentação**: OpenAPI 3.0, Swagger UI

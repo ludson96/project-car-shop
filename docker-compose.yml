@@ -1,52 +1,34 @@
-version: "3"
+version: "3.8"
 
 services:
-  # Serviço que irá rodar o node
   node:
-    # Imagem base do container
-    image: node:16.14
-    # Nome do container para facilitar execução
+    build: .
+    image: car_shop_api:latest
     container_name: car_shop
-    # Caminho da Dockerfile
-    build: ./ 
-    # Mesmo que `docker run -t`
-    tty: true
-    # Mesmo que `docker run -i`
-    stdin_open: true
-    # Substitui o comando padrão da imagem do node
-    command: bash
-    # Restarta a imagem caso algo a faça parar
     restart: always
-    # Diretório padrão de execução
-    working_dir: /app
-    # Lista de volumes (diretórios) mapeados de fora para dentro do container
-    volumes:
-      # Monta o diretório atual, com todos os dados do projeto, 
-      # dentro do diretório /app
-      - ./:/app
-    # Lista de serviços do qual este serviço depende
-    depends_on:
-      # Precisa do mongo funcionando antes de subir o node
-      - mongodb
-    # Lista de portas mapeadas de dentro para fora do container
-    # na notação porta_de_fora:porta_de_dentro
     ports:
-      # Expõe a porta padrão da aplicação: altere aqui caso use outra porta
       - 3001:3001
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/CarShop
-
-  # Serviço que irá rodar o mongodb
-  mongodb:
-    image: mongo:5.0.7
-    container_name: car_shop_db
+      - PORT=${PORT:-3001}
+      - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/CarShop}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_PORT=${REDIS_PORT:-6379}
+      - JWT_SECRET=${JWT_SECRET:-car_shop_secret_jwt_key_portfolio}
+    depends_on:
+      - mongodb
+      - redis
     volumes:
       - ./:/app
+      - /app/node_modules
+
+  mongodb:
+    image: mongo:6.0
+    container_name: car_shop_db
     restart: always
     ports:
-      # Garanta que não haverá conflitos de porta com um mongodb que esteja
-      # rodando localmente
       - 27017:27017
+    volumes:
+      - mongo_data:/data/db
 
   redis:
     image: redis:alpine
@@ -54,20 +36,13 @@ services:
     restart: always
     ports:
       - 6379:6379
+    volumes:
+      - redis_data:/data
 
-# Lista de redes que os containeres irão utilizar
+volumes:
+  mongo_data:
+  redis_data:
+
 networks:
-  # Rede padrão, criada automaticamente
   default:
-    # Dá um nome específico à rede padrão
     name: car_shop_net
-
-# As chaves `tty`, `stdin_open` e `command` fazem com que o container fique
-# rodando em segundo plano, bem como tornam possível o uso do comando
-# `docker attach`, já deixando o terminal atual acoplado ao container, direto
-# no bash. Apesar disso, utilizar o attach mais de uma vez irá replicar o
-# terminal, portanto é melhor utilizar o comando `docker exec`.
-
-# A renomeação da rede padrão é feita pois caso contrário o nome da rede será
-# o nome do diretório onde o arquivo atual se encontra, o que pode dificultar
-# a listagem individual.

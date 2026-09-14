@@ -27,7 +27,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'npm'
 
       - name: Install dependencies
@@ -39,6 +39,6 @@ jobs:
       - name: Run tests with coverage
         run: npm run test:coverage
         env:
-          JWT_SECRET: ci_secret_token_key_12345
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'ci_test_jwt_secret_key' }}
           REDIS_HOST: localhost
           REDIS_PORT: 6379

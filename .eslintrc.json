@@ -10,7 +10,6 @@
         "plugin:@typescript-eslint/recommended",
         "airbnb-base",
         "plugin:editorconfig/noconflict",
-        "plugin:mocha/recommended",
         "airbnb-typescript/base"
     ],
     "parser": "@typescript-eslint/parser",
@@ -35,7 +34,7 @@
         "sourceType": "module",
         "project": "./tsconfig.json"
     },
-    "plugins": ["@typescript-eslint", "sonarjs", "editorconfig", "mocha"],
+    "plugins": ["@typescript-eslint", "sonarjs", "editorconfig"],
     "rules": {
         "class-methods-use-this": "off",
         "no-underscore-dangle": "off",
