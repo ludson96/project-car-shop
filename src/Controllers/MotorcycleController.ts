@@ -1,67 +1,68 @@
 import { Request, Response, NextFunction } from 'express';
 import IMotorcycles from '../Interfaces/IMotorcycle';
 import MotorcycleService from '../Services/MotorcyclesService';
+import { IVehicleFilterQuery } from '../utils/filterHelpers';
 
 export default class MotorcycleController {
-  private req: Request;
-  private res: Response;
-  private next: NextFunction;
   private service: MotorcycleService;
 
-  constructor(req: Request, res: Response, next: NextFunction) {
-    this.req = req;
-    this.res = res;
-    this.next = next;
-    this.service = new MotorcycleService();
+  constructor(service: MotorcycleService = new MotorcycleService()) {
+    this.service = service;
   }
 
-  public async create() {
+  public async create(req: Request, res: Response, next: NextFunction) {
     try {
-      const moto: IMotorcycles = this.req.body;
+      const moto: IMotorcycles = req.body;
       const newMoto = await this.service.create(moto);
-      return this.res.status(201).json(newMoto);
+      return res.status(201).json(newMoto);
     } catch (e) {
-      this.next(e);
+      next(e);
     }
   }
 
-  public async getAllMoto() {
+  public async getAllMoto(req: Request, res: Response, next: NextFunction) {
     try {
+      if (Object.keys(req.query).length > 0) {
+        const paginated = await this.service.getFilteredMoto(
+          req.query as unknown as IVehicleFilterQuery,
+        );
+        return res.status(200).json(paginated);
+      }
       const allMoto = await this.service.getAllMoto();
-      return this.res.status(200).json(allMoto);
+      return res.status(200).json(allMoto);
     } catch (e) {
-      this.next(e);
+      next(e);
     }
   }
 
-  public async getMotoById() {
+  public async getMotoById(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = this.req.params;
+      const { id } = req.params;
       const moto = await this.service.getMotoById(id);
-      return this.res.status(200).json(moto);
+      return res.status(200).json(moto);
     } catch (e) {
-      this.next(e);
+      next(e);
     }
   }
 
-  public async updateMoto() {
+  public async updateMoto(req: Request, res: Response, next: NextFunction) {
     try {
-      const input = this.req.body;
-      const { id } = this.req.params;
+      const input = req.body;
+      const { id } = req.params;
       const updatedMoto = await this.service.updateMoto(id, input);
-      return this.res.status(200).json(updatedMoto);
+      return res.status(200).json(updatedMoto);
     } catch (e) {
-      this.next(e);
+      next(e);
     }
   }
 
-  public async deleteMoto() {
+  public async deleteMoto(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = this.req.params;
+      const { id } = req.params;
       await this.service.deleteMoto(id);
-      return this.res.status(204).json({});
+      return res.status(204).json({});
     } catch (e) {
-      this.next(e);
+      next(e);
     }
   }
 }

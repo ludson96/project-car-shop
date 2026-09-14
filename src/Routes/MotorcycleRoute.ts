@@ -1,31 +1,36 @@
 import { Router } from 'express';
 import MotorcycleController from '../Controllers/MotorcycleController';
+import {
+  validateBody,
+  motorcycleSchema,
+  updateMotorcycleSchema,
+} from '../Validations/vehicleValidation';
+import { authMiddleware, roleMiddleware } from '../Middlewares/authMiddleware';
 
 const router = Router();
+const motorcycleController = new MotorcycleController();
 
 router.post(
   '/',
-  (req, res, next) => new MotorcycleController(req, res, next).create(),
+  authMiddleware,
+  roleMiddleware('admin'),
+  validateBody(motorcycleSchema),
+  (req, res, next) => motorcycleController.create(req, res, next),
 );
-
-router.get(
-  '/',
-  (req, res, next) => new MotorcycleController(req, res, next).getAllMoto(),
-);
-
-router.get(
-  '/:id',
-  (req, res, next) => new MotorcycleController(req, res, next).getMotoById(),
-);
-
+router.get('/', (req, res, next) => motorcycleController.getAllMoto(req, res, next));
+router.get('/:id', (req, res, next) => motorcycleController.getMotoById(req, res, next));
 router.put(
   '/:id',
-  (req, res, next) => new MotorcycleController(req, res, next).updateMoto(),
+  authMiddleware,
+  roleMiddleware('admin'),
+  validateBody(updateMotorcycleSchema),
+  (req, res, next) => motorcycleController.updateMoto(req, res, next),
 );
-
 router.delete(
   '/:id',
-  (req, res, next) => new MotorcycleController(req, res, next).deleteMoto(),
+  authMiddleware,
+  roleMiddleware('admin'),
+  (req, res, next) => motorcycleController.deleteMoto(req, res, next),
 );
 
 export default router;

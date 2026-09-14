@@ -1,69 +1,70 @@
 import { Request, Response, NextFunction } from 'express';
 import ICar from '../Interfaces/ICar';
 import CarService from '../Services/CarService';
+import { IVehicleFilterQuery } from '../utils/filterHelpers';
 
 export default class CarController {
-  private req: Request;
-  private res: Response;
-  private next: NextFunction;
   private service: CarService;
 
-  constructor(req: Request, res: Response, next: NextFunction) {
-    this.req = req;
-    this.res = res;
-    this.next = next;
-    this.service = new CarService();
+  constructor(service: CarService = new CarService()) {
+    this.service = service;
   }
 
-  public async create() {
-    const car: ICar = this.req.body;
+  public async create(req: Request, res: Response, next: NextFunction) {
+    const car: ICar = req.body;
 
     try {
       const newCar = await this.service.create(car);
-      return this.res.status(201).json(newCar);
+      return res.status(201).json(newCar);
     } catch (e) {
-      this.next(e);
+      next(e);
     }
   }
 
-  public async getAllCars() {
+  public async getAllCars(req: Request, res: Response, next: NextFunction) {
     try {
+      if (Object.keys(req.query).length > 0) {
+        const paginated = await this.service.getFilteredCars(
+          req.query as unknown as IVehicleFilterQuery,
+        );
+        return res.status(200).json(paginated);
+      }
       const allCars = await this.service.getAllCars();
-      return this.res.status(200).json(allCars);
+      return res.status(200).json(allCars);
     } catch (e) {
-      this.next(e);
+      next(e);
     }
   }
 
-  public async getCarById() {
-    const { id } = this.req.params;
+  public async getCarById(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
 
     try {
       const car = await this.service.getCarById(id);
-      return this.res.status(200).json(car);
+      return res.status(200).json(car);
     } catch (e) {
-      this.next(e);
+      next(e);
     }
   }
 
-  public async updateCar() {
+  public async updateCar(req: Request, res: Response, next: NextFunction) {
     try {
-      const input = this.req.body;
-      const { id } = this.req.params;
+      const input = req.body;
+      const { id } = req.params;
       const updatedCar = await this.service.updateCar(id, input);
-      return this.res.status(200).json(updatedCar);
+      return res.status(200).json(updatedCar);
     } catch (e) {
-      this.next(e);
+      next(e);
     }
   }
 
-  public async deleteCar() {
+  public async deleteCar(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = this.req.params;
+      const { id } = req.params;
       await this.service.deleteCar(id);
-      return this.res.status(204).json({});
+      return res.status(204).json({});
     } catch (e) {
-      this.next(e);
+      next(e);
     }
   }
 }

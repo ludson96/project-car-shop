@@ -48,6 +48,13 @@ services:
       # rodando localmente
       - 27017:27017
 
+  redis:
+    image: redis:alpine
+    container_name: car_shop_redis
+    restart: always
+    ports:
+      - 6379:6379
+
 # Lista de redes que os containeres irão utilizar
 networks:
   # Rede padrão, criada automaticamente

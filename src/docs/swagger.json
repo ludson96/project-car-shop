@@ -1,0 +1,251 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Car Shop API",
+    "description": "API RESTful empresarial para gerenciamento de concessionária de veículos, vendas e controle de estoque com autenticação JWT e RBAC.",
+    "version": "2.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Servidor de Desenvolvimento Local"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "UserRegister": {
+        "type": "object",
+        "required": ["name", "email", "password"],
+        "properties": {
+          "name": { "type": "string", "example": "John Doe" },
+          "email": { "type": "string", "format": "email", "example": "admin@carshop.com" },
+          "password": { "type": "string", "example": "secret123" },
+          "role": { "type": "string", "enum": ["admin", "customer"], "default": "customer" }
+        }
+      },
+      "UserLogin": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "example": "admin@carshop.com" },
+          "password": { "type": "string", "example": "secret123" }
+        }
+      },
+      "CarInput": {
+        "type": "object",
+        "required": ["model", "year", "color", "buyValue", "doorsQty", "seatsQty"],
+        "properties": {
+          "model": { "type": "string", "example": "Honda Civic" },
+          "year": { "type": "integer", "example": 2022 },
+          "color": { "type": "string", "example": "Black" },
+          "status": { "type": "boolean", "example": true },
+          "buyValue": { "type": "number", "example": 120000 },
+          "doorsQty": { "type": "integer", "example": 4 },
+          "seatsQty": { "type": "integer", "example": 5 }
+        }
+      },
+      "MotorcycleInput": {
+        "type": "object",
+        "required": ["model", "year", "color", "buyValue", "category", "engineCapacity"],
+        "properties": {
+          "model": { "type": "string", "example": "Yamaha MT-07" },
+          "year": { "type": "integer", "example": 2021 },
+          "color": { "type": "string", "example": "Blue" },
+          "status": { "type": "boolean", "example": true },
+          "buyValue": { "type": "number", "example": 45000 },
+          "category": { "type": "string", "enum": ["Street", "Custom", "Trail"], "example": "Street" },
+          "engineCapacity": { "type": "integer", "example": 689 }
+        }
+      },
+      "SaleInput": {
+        "type": "object",
+        "required": ["vehicleId", "vehicleType"],
+        "properties": {
+          "vehicleId": { "type": "string", "example": "634852326b35b59438fbea2f" },
+          "vehicleType": { "type": "string", "enum": ["car", "motorcycle"], "example": "car" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health Check do Servidor e Serviços (Mongo/Redis)",
+        "responses": {
+          "200": { "description": "Serviço saudável" },
+          "503": { "description": "Serviço indisponível" }
+        }
+      }
+    },
+    "/users/register": {
+      "post": {
+        "summary": "Registrar novo usuário",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/UserRegister" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Usuário registrado com sucesso" },
+          "400": { "description": "Dados de validação incorretos" },
+          "409": { "description": "Email já cadastrado" }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "summary": "Autenticar usuário e obter JWT",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/UserLogin" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Autenticado com sucesso" },
+          "401": { "description": "Credenciais inválidas" }
+        }
+      }
+    },
+    "/cars": {
+      "get": {
+        "summary": "Listar carros com suporte a paginação e filtros",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer" } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer" } },
+          { "name": "model", "in": "query", "schema": { "type": "string" } },
+          { "name": "color", "in": "query", "schema": { "type": "string" } },
+          { "name": "minPrice", "in": "query", "schema": { "type": "number" } },
+          { "name": "maxPrice", "in": "query", "schema": { "type": "number" } }
+        ],
+        "responses": {
+          "200": { "description": "Lista de carros" }
+        }
+      },
+      "post": {
+        "summary": "Criar novo carro (Requer Admin)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/CarInput" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Carro criado com sucesso" },
+          "400": { "description": "Validação de dados falhou" },
+          "401": { "description": "Não autenticado" },
+          "403": { "description": "Acesso proibido (Requer perfil Admin)" }
+        }
+      }
+    },
+    "/cars/{id}": {
+      "get": {
+        "summary": "Obter detalhes de um carro por ID",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Detalhes do carro" },
+          "404": { "description": "Carro não encontrado" },
+          "422": { "description": "ID inválido do MongoDB" }
+        }
+      },
+      "put": {
+        "summary": "Atualizar carro (Requer Admin)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/CarInput" } }
+          }
+        },
+        "responses": {
+          "200": { "description": "Carro atualizado" },
+          "401": { "description": "Não autenticado" },
+          "403": { "description": "Requer perfil Admin" },
+          "404": { "description": "Carro não encontrado" }
+        }
+      },
+      "delete": {
+        "summary": "Deletar carro (Requer Admin)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "204": { "description": "Carro deletado" },
+          "401": { "description": "Não autenticado" },
+          "403": { "description": "Requer perfil Admin" },
+          "404": { "description": "Carro não encontrado" }
+        }
+      }
+    },
+    "/motorcycles": {
+      "get": {
+        "summary": "Listar motos com paginação e filtros",
+        "responses": { "200": { "description": "Lista de motos" } }
+      },
+      "post": {
+        "summary": "Criar nova moto (Requer Admin)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/MotorcycleInput" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Moto criada com sucesso" },
+          "401": { "description": "Não autenticado" },
+          "403": { "description": "Requer perfil Admin" }
+        }
+      }
+    },
+    "/sales": {
+      "get": {
+        "summary": "Listar todas as vendas (Requer Admin)",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de todas as vendas" },
+          "403": { "description": "Apenas admin tem acesso" }
+        }
+      },
+      "post": {
+        "summary": "Comprar/Vender veículo (Requer Usuário Autenticado)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/SaleInput" } }
+          }
+        },
+        "responses": {
+          "201": { "description": "Venda concluída com sucesso" },
+          "400": { "description": "Veículo indisponível para venda ou payload inválido" },
+          "404": { "description": "Veículo não encontrado" }
+        }
+      }
+    },
+    "/sales/my-sales": {
+      "get": {
+        "summary": "Listar compras do usuário logado",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Histórico do usuário" }
+        }
+      }
+    }
+  }
+}

@@ -7,12 +7,6 @@ export default class Motorcycles extends Vehicle {
 
   constructor(moto: IMotorcycles) {
     super(moto);
-    this.id = moto.id;
-    this.model = moto.model;
-    this.year = moto.year;
-    this.color = moto.color;
-    this.status = moto.status || false;
-    this.buyValue = moto.buyValue;
     this.category = moto.category;
     this.engineCapacity = moto.engineCapacity;
   }

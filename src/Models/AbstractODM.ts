@@ -1,4 +1,4 @@
-import { model, Model, models, Schema, UpdateQuery } from 'mongoose';
+import { model, Model, models, Schema, UpdateQuery, FilterQuery } from 'mongoose';
 
 export default abstract class AbstractODM<T> {
   protected model: Model<T>;
@@ -25,6 +25,34 @@ export default abstract class AbstractODM<T> {
 
   public async getAll(): Promise<T[]> {
     return this.model.find();
+  }
+
+  public async getPaginated(
+    filter: Record<string, unknown> = {},
+    page = 1,
+    limit = 10,
+    sort: Record<string, 1 | -1> = {},
+  ): Promise<{ data: T[]; total: number; page: number; totalPages: number; limit: number }> {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.model
+        .find(filter as FilterQuery<T>)
+        .sort(sort)
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+      this.model
+        .countDocuments(filter as FilterQuery<T>)
+        .exec(),
+    ]);
+
+    return {
+      data: data as unknown as T[],
+      total,
+      page,
+      totalPages: Math.ceil(total / limit) || 1,
+      limit,
+    };
   }
 
   public async getById(_id: string): Promise<T | null> {
