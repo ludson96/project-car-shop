@@ -1,8 +1,7 @@
-import { expect } from 'chai';
-import sinon from 'sinon';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Model } from 'mongoose';
 import CarService from '../../../src/Services/CarService';
-import { 
+import {
   validCarInput,
   validCarOutput,
   validAllCarsOutput,
@@ -13,105 +12,87 @@ import Car from '../../../src/Domains/Car';
 
 const SUCESS = 'Com sucesso';
 
-describe('Testando endpoint /cars', function () {
+describe('Testando endpoint /cars', () => {
   let carService: CarService;
 
-  beforeEach(function () {
+  beforeEach(() => {
     carService = new CarService();
   });
 
-  describe('Criar um carro (post)', function () {
-    it(SUCESS, async function () {
-      const carOutput: Car = new Car(validCarOutput);
-      sinon.stub(Model, 'create').resolves(carOutput);
-      
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  describe('Criar um carro (post)', () => {
+    it(SUCESS, async () => {
+      const carOutput = new Car(validCarOutput);
+      vi.spyOn(Model, 'create').mockResolvedValue(carOutput as any);
+
       const result = await carService.create(validCarInput);
-      
-      expect(result).to.be.deep.equal(carOutput);
+
+      expect(result).toEqual(carOutput);
     });
 
-    it('Caso input seja vazio', async function () {
-      sinon.stub(Model, 'create').resolves();
-      
-      const result = await carService.create(validCarInput);
-      
-      expect(result).to.be.deep.equal(null);
-    });
+    it('Caso input seja vazio', async () => {
+      vi.spyOn(Model, 'create').mockResolvedValue(null as any);
 
-    afterEach(function () {
-      sinon.restore();
+      const result = await carService.create(validCarInput);
+
+      expect(result).toBeNull();
     });
   });
 
-  describe('Listando todos os carros, endpoint "/cars" (get)', function () {
-    it(SUCESS, async function () {
-      sinon.stub(Model, 'find').resolves(validAllCarsOutput);
+  describe('Listando todos os carros, endpoint "/cars" (get)', () => {
+    it(SUCESS, async () => {
+      vi.spyOn(Model, 'find').mockResolvedValue(validAllCarsOutput as any);
 
       const result = await carService.getAllCars();
 
-      expect(result).to.be.deep.equal(validAllCarsOutput);
+      expect(result).toEqual(validAllCarsOutput);
     });
   });
 
-  describe('Listando carro específico, endpoint "/cars/:id" (get)', function () {
-    it(SUCESS, async function () {
-      sinon.stub(Model, 'findById').resolves(validCarOutput);
+  describe('Listando carro específico, endpoint "/cars/:id" (get)', () => {
+    it(SUCESS, async () => {
+      vi.spyOn(Model, 'findById').mockResolvedValue(validCarOutput as any);
 
       const result = await carService.getCarById(validId);
 
-      expect(result).to.be.deep.equal(validCarOutput);
+      expect(result).toEqual(validCarOutput);
     });
 
-    it('Caso o id seja invalido', async function () {
-      try {
-        carService.getCarById('eu sou um id invalido');
-      } catch (error) {
-        expect((error as Error).message).to.be.equal('Invalid mongo id');
-      }
+    it('Caso o id seja invalido', async () => {
+      await expect(
+        carService.getCarById('eu sou um id invalido'),
+      ).rejects.toThrow('Invalid mongo id');
     });
 
-    it('Caso o id não exista no banco', async function () {
-      try {
-        sinon.stub(Model, 'findById').resolves();
-        await carService.getCarById(invalidId);
-      } catch (error) {
-        expect((error as Error).message).to.be.equal('Car not found');
-      }
-    });
-
-    afterEach(function () {
-      sinon.restore();
+    it('Caso o id não exista no banco', async () => {
+      vi.spyOn(Model, 'findById').mockResolvedValue(null as any);
+      await expect(carService.getCarById(invalidId)).rejects.toThrow('Car not found');
     });
   });
 
-  describe('Atualizando carros, endpoint "/cars/:id (put)"', function () {
-    it(SUCESS, async function () {
-      sinon.stub(Model, 'findByIdAndUpdate').resolves(validCarOutput);
+  describe('Atualizando carros, endpoint "/cars/:id (put)"', () => {
+    it(SUCESS, async () => {
+      vi.spyOn(Model, 'findByIdAndUpdate').mockResolvedValue(validCarOutput as any);
 
       const result = await carService.updateCar(validId, validCarOutput);
 
-      expect(result).to.be.deep.equal(validCarOutput);
+      expect(result).toEqual(validCarOutput);
     });
 
-    it('Caso o id seja invalido', async function () {
-      try {
-        carService.updateCar('eu sou um id invalido', validCarOutput);
-      } catch (error) {
-        expect((error as Error).message).to.be.equal('Invalid mongo id');
-      }
+    it('Caso o id seja invalido', async () => {
+      await expect(
+        carService.updateCar('eu sou um id invalido', validCarOutput),
+      ).rejects.toThrow('Invalid mongo id');
     });
 
-    it('Caso o id não exista no banco', async function () {
-      try {
-        sinon.stub(Model, 'findByIdAndUpdate').resolves();
-        await carService.updateCar(invalidId, validCarOutput);
-      } catch (error) {
-        expect((error as Error).message).to.be.equal('Car not found');
-      }
-    });
-
-    afterEach(function () {
-      sinon.restore();
+    it('Caso o id não exista no banco', async () => {
+      vi.spyOn(Model, 'findByIdAndUpdate').mockResolvedValue(null as any);
+      await expect(
+        carService.updateCar(invalidId, validCarOutput),
+      ).rejects.toThrow('Car not found');
     });
   });
 });

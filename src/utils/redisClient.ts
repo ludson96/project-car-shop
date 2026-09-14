@@ -11,7 +11,11 @@ const createRedisClient = (): Redis | null => {
       maxRetriesPerRequest: 1,
       retryStrategy: () => null,
       lazyConnect: true,
+      enableOfflineQueue: false,
     });
+
+    // Anexa listener para evitar emissão de unhandled error event em stderr
+    client.on('error', () => {});
 
     client.connect().catch(() => {});
     return client;

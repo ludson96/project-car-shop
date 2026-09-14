@@ -1,6 +1,5 @@
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import request from 'supertest';
-import { expect } from 'chai';
-import sinon from 'sinon';
 import { Model } from 'mongoose';
 import jwt from 'jsonwebtoken';
 import app from '../../src/app';
@@ -26,22 +25,22 @@ const mockCar = {
   seatsQty: 5,
 };
 
-describe('Integração: Rotas de Carros (/cars)', function () {
-  afterEach(function () {
-    sinon.restore();
+describe('Integração: Rotas de Carros (/cars)', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
-  it('GET /cars - deve listar todos os carros sem autenticação', async function () {
-    sinon.stub(Model, 'find').resolves([mockCar]);
+  it('GET /cars - deve listar todos os carros sem autenticação', async () => {
+    vi.spyOn(Model, 'find').mockResolvedValue([mockCar] as any);
 
     const res = await request(app).get('/cars');
 
-    expect(res.status).to.be.equal(200);
-    expect(res.body).to.be.an('array');
-    expect(res.body[0].model).to.be.equal('Civic LX');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0].model).toBe('Civic LX');
   });
 
-  it('POST /cars - deve bloquear requisição sem token (401)', async function () {
+  it('POST /cars - deve bloquear requisição sem token (401)', async () => {
     const res = await request(app)
       .post('/cars')
       .send({
@@ -53,11 +52,11 @@ describe('Integração: Rotas de Carros (/cars)', function () {
         seatsQty: 5,
       });
 
-    expect(res.status).to.be.equal(401);
-    expect(res.body.message).to.be.equal('Token not found');
+    expect(res.status).toBe(401);
+    expect(res.body.message).toBe('Token not found');
   });
 
-  it('POST /cars - deve bloquear usuário não admin com 403 Forbidden', async function () {
+  it('POST /cars - deve bloquear usuário não admin com 403 Forbidden', async () => {
     const res = await request(app)
       .post('/cars')
       .set('Authorization', `Bearer ${customerToken}`)
@@ -70,11 +69,11 @@ describe('Integração: Rotas de Carros (/cars)', function () {
         seatsQty: 5,
       });
 
-    expect(res.status).to.be.equal(403);
-    expect(res.body.message).to.include('Admin access required');
+    expect(res.status).toBe(403);
+    expect(res.body.message).toContain('Admin access required');
   });
 
-  it('POST /cars - deve rejeitar payload inválido com Zod (400)', async function () {
+  it('POST /cars - deve rejeitar payload inválido com Zod (400)', async () => {
     const res = await request(app)
       .post('/cars')
       .set('Authorization', `Bearer ${adminToken}`)
@@ -84,13 +83,13 @@ describe('Integração: Rotas de Carros (/cars)', function () {
         buyValue: -50,
       });
 
-    expect(res.status).to.be.equal(400);
-    expect(res.body.message).to.be.equal('Validation failed');
-    expect(res.body.errors).to.be.an('array');
+    expect(res.status).toBe(400);
+    expect(res.body.message).toBe('Validation failed');
+    expect(Array.isArray(res.body.errors)).toBe(true);
   });
 
-  it('POST /cars - deve criar carro com sucesso para admin (201)', async function () {
-    sinon.stub(Model, 'create').resolves(mockCar);
+  it('POST /cars - deve criar carro com sucesso para admin (201)', async () => {
+    vi.spyOn(Model, 'create').mockResolvedValue(mockCar as any);
 
     const res = await request(app)
       .post('/cars')
@@ -105,7 +104,7 @@ describe('Integração: Rotas de Carros (/cars)', function () {
         seatsQty: 5,
       });
 
-    expect(res.status).to.be.equal(201);
-    expect(res.body.model).to.be.equal('Civic LX');
+    expect(res.status).toBe(201);
+    expect(res.body.model).toBe('Civic LX');
   });
 });

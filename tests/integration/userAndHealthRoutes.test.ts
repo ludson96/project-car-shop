@@ -1,6 +1,5 @@
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import request from 'supertest';
-import { expect } from 'chai';
-import sinon from 'sinon';
 import { Model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import app from '../../src/app';
@@ -16,21 +15,21 @@ const mockUser = {
   role: 'customer',
 };
 
-describe('Integração: Rotas de Usuário (/users) e Health (/health)', function () {
-  afterEach(function () {
-    sinon.restore();
+describe('Integração: Rotas de Usuário (/users) e Health (/health)', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
-  it('GET /health - deve retornar status do sistema', async function () {
+  it('GET /health - deve retornar status do sistema', async () => {
     const res = await request(app).get('/health');
-    expect(res.status).to.be.oneOf([200, 503]);
-    expect(res.body).to.have.property('status');
-    expect(res.body).to.have.property('services');
+    expect([200, 503]).toContain(res.status);
+    expect(res.body).toHaveProperty('status');
+    expect(res.body).toHaveProperty('services');
   });
 
-  it('POST /users/register - deve validar e registrar um novo usuário (201)', async function () {
-    sinon.stub(Model, 'findOne').resolves(null);
-    sinon.stub(Model, 'create').resolves(mockUser);
+  it('POST /users/register - deve validar e registrar um novo usuário (201)', async () => {
+    vi.spyOn(Model, 'findOne').mockResolvedValue(null);
+    vi.spyOn(Model, 'create').mockResolvedValue(mockUser as any);
 
     const res = await request(app)
       .post('/users/register')
@@ -40,14 +39,14 @@ describe('Integração: Rotas de Usuário (/users) e Health (/health)', function
         password: 'password123',
       });
 
-    expect(res.status).to.be.equal(201);
-    expect(res.body).to.have.property('token');
-    expect(res.body.user.email).to.be.equal(TEST_EMAIL);
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty('token');
+    expect(res.body.user.email).toBe(TEST_EMAIL);
   });
 
-  it('POST /users/login - deve logar com credenciais corretas (200)', async function () {
-    sinon.stub(Model, 'findOne').resolves(mockUser);
-    sinon.stub(bcrypt, 'compare').resolves(Boolean(true));
+  it('POST /users/login - deve logar com credenciais corretas (200)', async () => {
+    vi.spyOn(Model, 'findOne').mockResolvedValue(mockUser as any);
+    vi.spyOn(bcrypt, 'compare').mockResolvedValue(true as any);
 
     const res = await request(app)
       .post('/users/login')
@@ -56,7 +55,7 @@ describe('Integração: Rotas de Usuário (/users) e Health (/health)', function
         password: 'password123',
       });
 
-    expect(res.status).to.be.equal(200);
-    expect(res.body).to.have.property('token');
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('token');
   });
 });
