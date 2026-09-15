@@ -12,4 +12,6 @@ RUN chown node:node /app
 
 USER node
 
-CMD ["npm", "run", "dev"]
+EXPOSE 3001
+
+CMD ["npm", "start"]
