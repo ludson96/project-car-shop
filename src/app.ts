@@ -26,8 +26,9 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// Documentação Interativa Swagger
+// Documentação Interativa Swagger e Redirecionamento da Raiz
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.get('/', (_req, res) => res.redirect('/docs'));
 
 // Rotas da Aplicação
 app.use('/health', HealthRouter);
