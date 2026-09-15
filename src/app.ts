@@ -14,7 +14,9 @@ import swaggerDocument from './docs/swagger.json';
 const app = express();
 
 // Middlewares de Segurança e Parsing
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false,
+}));
 app.use(cors());
 app.use(express.json());
 
