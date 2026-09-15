@@ -5,6 +5,8 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "tsx src/server.ts",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "test": "cross-env VITE_CJS_IGNORE_WARNING=true vitest run",
     "test:watch": "cross-env VITE_CJS_IGNORE_WARNING=true vitest",
